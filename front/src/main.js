@@ -112,38 +112,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Calendar V2 Logic ---
-  let tokenClient;
-  let gapiInited = false;
-  let gisInited = false;
-  const CLIENT_ID = '166947616558-sfkc6u4ngd0tjcj39o5jv2t1m886dlso.apps.googleusercontent.com';
-  const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-  const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
-
-  const gapiLoaded = async () => {
-    gapi.load('client', async () => {
-      await gapi.client.init({
-        discoveryDocs: [DISCOVERY_DOC],
-      });
-      gapiInited = true;
-      maybeEnableButton();
-    });
-  };
-
-  const gisLoaded = () => {
-    tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: SCOPES,
-      callback: '', // defined later in event handler
-    });
-    gisInited = true;
-    maybeEnableButton();
+  // --- Calendar Backend Logic ---
+  const handleAuthClick = () => {
+    // Redirect to backend auth
+    window.location.href = 'http://localhost:3000/api/calendar/auth';
   };
 
   const maybeEnableButton = () => {
-    if (gapiInited && gisInited) {
-      const authBtn = document.getElementById('authorize_button');
-      if (authBtn) {
+    const authBtn = document.getElementById('authorize_button');
+    if (authBtn) {
+      // If we have 'calendar_connected' in URL, we are likely auth'd
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('calendar_connected')) {
+        authBtn.innerText = 'Connecté (Backend)';
+        authBtn.classList.add('btn-finish');
+        // Clear param to clean URL
+        window.history.replaceState({}, document.title, "/");
+      } else {
         authBtn.style.opacity = '1';
         authBtn.onclick = handleAuthClick;
         authBtn.innerText = 'G Connecter Google';
@@ -151,61 +136,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Poll for script load (simple approach) or use onload in HTML
-  // Since we added scripts with async defer, we check availability
-  const checkGoogleLibs = setInterval(() => {
-    if (typeof gapi !== 'undefined' && !gapiInited) {
-      gapiLoaded();
-    }
-    if (typeof google !== 'undefined' && !gisInited) {
-      gisLoaded();
-    }
-    if (gapiInited && gisInited) clearInterval(checkGoogleLibs);
-  }, 500);
+  // Check auth state on load
+  maybeEnableButton();
+  // Poll for data anyway (in case backend has persistence)
+  setTimeout(() => fetchDashboardData(), 1000);
 
-  const handleAuthClick = () => {
-    tokenClient.callback = async (resp) => {
-      if (resp.error !== undefined) {
-        throw (resp);
-      }
-      document.getElementById('authorize_button').innerText = 'Connecté';
-      document.getElementById('authorize_button').classList.add('btn-finish');
-      await listUpcomingEvents();
-    };
-
-    if (gapi.client.getToken() === null) {
-      // Prompt the user to select a Google Account and ask for consent to share their data
-      // when establishing a new session.
-      tokenClient.requestAccessToken({ prompt: 'consent' });
-    } else {
-      // Skip display of account chooser and consent dialog for an existing session.
-      tokenClient.requestAccessToken({ prompt: '' });
-    }
-  };
-
-  const listUpcomingEvents = async () => {
+  const fetchDashboardData = async () => {
     try {
-      // Start of today (midnight) to ensure we see all of today's events even if running mid-day
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const request = {
-        'calendarId': 'primary',
-        'timeMin': today.toISOString(),
-        'showDeleted': false,
-        'singleEvents': true,
-        'maxResults': 50, // Increased to avoid birthdays burying other events
-        'orderBy': 'startTime',
-      };
-      const response = await gapi.client.calendar.events.list(request);
-      const events = response.result.items;
+      const eventsRes = await fetch('http://localhost:3000/api/calendar/events');
+      const events = await eventsRes.json();
 
       renderBriefingEvents(events);
-      initCalendar(events); // Re-render grid with events
+      initCalendar(events);
 
     } catch (err) {
-      console.error(err);
-      alert('Erreur chargement calendrier: ' + err.message);
+      console.error("Dashboard Data Error:", err);
     }
   };
 
