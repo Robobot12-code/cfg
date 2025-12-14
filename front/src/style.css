@@ -274,7 +274,35 @@ h3 {
 }
 
 /* Cards & Glassmorphism */
+/* Briefing Mode Specifics */
+body.briefing-mode .chat-interface {
+  display: none;
+  /* Hide Chat in Briefing */
+}
+
+body.briefing-mode #briefing-content {
+  width: 100%;
+  max-width: 1200px;
+  /* Better responsiveness */
+  margin: 0 auto;
+}
+
+body.briefing-mode h1,
+body.briefing-mode h2 {
+  font-size: 2.5rem;
+  /* Bigger Titles */
+  letter-spacing: -0.02em;
+}
+
+body.briefing-mode p {
+  font-size: 1.2rem;
+  /* Clearer Text */
+  line-height: 1.6;
+}
+
+/* Glass Card Tweaks */
 .glass-card {
+  /* ... existing ... */
   background: var(--card-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
