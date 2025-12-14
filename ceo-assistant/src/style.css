@@ -1,0 +1,579 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Theme: Dark Blue & Gold */
+  --bg-dark-navy: #0F1E38;
+  --bg-light-navy: #162A47;
+
+  --bg-color: var(--bg-dark-navy);
+
+  --text-primary: #F1F5F9;
+  --text-primary2: #CBD5E1;
+  --text-secondary: #94A3B8;
+
+  --accent-blue: #F59E0B;
+  /* Mapped to Gold/Amber */
+
+  --status-red: #EF4444;
+  --status-orange: #F97316;
+  --status-green: #10B981;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(15, 30, 56, 0.4);
+  --glass-border: rgba(255, 215, 0, 0.15);
+  /* Subtle Gold border */
+  --glass-highlight: rgba(255, 215, 0, 0.2);
+  --glass-blur: 16px;
+
+  --font-main: 'Inter', sans-serif;
+  --max-width: 680px;
+  --card-radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Navy Radial Gradient */
+  background-image: radial-gradient(circle at 50% 0%, var(--bg-light-navy) 0%, var(--bg-dark-navy) 70%);
+
+  /* Increased Base Font Size */
+  font-size: 18px;
+}
+
+/* App Container - Desktop Canvas */
+#app {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  /* Sidebar Layout */
+  align-items: stretch;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 260px;
+  height: 100%;
+  background: rgba(15, 30, 56, 0.4);
+  border-right: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  z-index: 10;
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+.sidebar-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--accent-blue);
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-item {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: rgba(245, 158, 11, 0.1);
+  /* Gold tint */
+  color: var(--accent-blue);
+  font-weight: 500;
+}
+
+/* Main Content Column Wrapper */
+#content-container {
+  flex: 1;
+  /* Take remaining width */
+  width: auto;
+  max-width: var(--max-width);
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  transition: max-width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin: 0 auto;
+  /* Center horizontally */
+  justify-content: center;
+}
+
+#content-container.wide-mode {
+  max-width: 1200px;
+}
+
+/* Calendar V2 Grid Styles */
+.calendar-grid rect,
+.calendar-grid text {
+  fill: var(--text-secondary);
+}
+
+.calendar-cell {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 4px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.calendar-cell:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.calendar-cell.has-event::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-blue);
+}
+
+.calendar-cell.today {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: var(--accent-blue);
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+/* Tabs & Relations Hub */
+.tabs {
+  gap: 1rem;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  color: var(--accent-blue);
+  border-bottom-color: var(--accent-blue);
+}
+
+.relation-card {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.relation-card:active {
+  transform: scale(0.98);
+}
+
+/* Summary Grid Layout */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  height: 100%;
+  align-content: start;
+}
+
+@media (max-width: 1024px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Typography */
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #fff 0%, #94A3B8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-sm {
+  font-size: 1rem;
+}
+
+.text-xs {
+  font-size: 0.85rem;
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.uppercase {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+}
+
+.text-xl {
+  font-size: 1.5rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+/* Cards & Glassmorphism */
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--card-radius);
+  padding: 1rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.75rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--glass-highlight);
+}
+
+.btn {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 99px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: #0F172A;
+  border: none;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  background: var(--accent-blue);
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0;
+}
+
+/* Sections / Pages */
+main {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  /* Transition states managed by JS classes */
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  pointer-events: none;
+  z-index: 0;
+}
+
+section.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  z-index: 10;
+}
+
+section.prev {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.98);
+  pointer-events: none;
+}
+
+section.next {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  pointer-events: none;
+}
+
+/* Scrollbar hidden but functional */
+section::-webkit-scrollbar {
+  width: 4px;
+}
+
+section::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+/* Navigation Bar - Default Hidden (Sidebar Mode) */
+.nav-bar {
+  display: none;
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  gap: 1rem;
+  z-index: 20;
+}
+
+/* Briefing Mode State */
+body.briefing-mode .sidebar {
+  display: none;
+  /* Hide Sidebar in Briefing */
+}
+
+body.briefing-mode #content-container {
+  max-width: 800px;
+  /* Focused, centered width */
+}
+
+body.briefing-mode .nav-bar {
+  display: flex;
+  /* Show Buttons in Briefing */
+}
+
+/* Dual Calendar View Logic */
+.agenda-briefing {
+  display: none;
+  /* Hide List by default (Dashboard Mode) */
+}
+
+.agenda-dashboard {
+  display: block;
+  /* Show Grid by default (Dashboard Mode) */
+}
+
+body.briefing-mode .agenda-briefing {
+  display: block;
+  /* Show List in Briefing Mode */
+}
+
+body.briefing-mode .agenda-dashboard {
+  display: none;
+  /* Hide Grid in Briefing Mode */
+}
+
+/* Utilities */
+.flex-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mt-auto {
+  margin-top: auto;
+}
+
+.priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.priority-high {
+  background-color: var(--status-orange);
+}
+
+.priority-urgent {
+  background-color: var(--status-red);
+}
+
+.priority-normal {
+  background-color: var(--status-green);
+}
+
+.tag {
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Availability Toggle */
+.status-toggle {
+  background: var(--glass-bg);
+  border-radius: 99px;
+  padding: 4px;
+  display: inline-flex;
+  border: 1px solid var(--glass-border);
+}
+
+.status-toggle button {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.status-toggle button.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  border-radius: var(--card-radius);
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.modal-overlay.active .modal-content {
+  transform: scale(1);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
